@@ -1,36 +1,52 @@
-const Header = ({course}) => (
-  <h1>{course}</h1>
-)
-const Part = ({part, exercises}) => (
-  <p>{part} {exercises}</p>
-)
-const Content = ( { part1, part2, part3, exercises1, exercises2, exercises3 } ) => {
-  return  (
-    <>
-      <Part part={part1} exercise={exercises1} />
-      <Part part={part2} exercise={exercises2} />
-      <Part part={part3} exercise={exercises3}/>
-    </>
-  )
-}
-const Total = ( { a, b, c } ) => (
-  <p>{ a + b + c}</p>
-)
-const App = () => {
-  const course = 'Half Stack application development'
-   const part1 = 'Fundamentals of React'
-  const exercises1 = 10
-  const part2 = 'Using props to pass data'
-  const exercises2 = 7
-  const part3 = 'State of a component'
-  const exercises3 = 14
+import { useState } from "react"
+const History = (props) => {
+  if (props.allClicks.length === 0) {
+    return (
+      <div>
+        the app is used by pressing the buttons
+      </div>
+    )
+  }
   return (
-    <>
-      <Header course={course} />
-      <Content part1={part1} part2={part2} part3={part3} exercises1={exercises1} exercises2={exercises2} exercises3={exercises3} />
-      <Total a={exercises1} b={exercises2} c={exercises3} />
-    </>
+    <div>
+      button press history: {props.allClicks.join(' ')}
+    </div>
   )
 }
 
+const App = () => {
+  const [left, setLeft] = useState(0)
+  const [right, setRight] = useState(0)
+  const [total, setTotal] = useState(0);
+  const [allClicks, setAll] = useState([])
+
+
+  const handleLeftClick = () => {
+    setAll(allClicks.concat('L'))
+    const newLeft = left + 1;
+    setLeft(newLeft)
+    setTotal(newLeft + right);
+  }
+
+  const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
+
+  const handleRightClick = () => {
+    setAll(allClicks.concat('R'))
+    const newRight = right + 1;
+    setRight(newRight);
+    setTotal(left + newRight);
+  }
+
+  return (
+    <div>
+      {left}
+      <Button onClick={handleLeftClick} text={'left'}/>
+      <Button onClick={handleRightClick} text={'right'}/>
+      {right}
+      <p>{allClicks.join(' ')}</p>
+      <p>total: {total}</p>
+      <History allClicks={allClicks} />
+    </div>
+  )
+}
 export default App
