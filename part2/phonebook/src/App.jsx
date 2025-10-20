@@ -1,17 +1,11 @@
-import { useState } from "react";
-const data = [
-  { name: "Arto Hellas", number: "040-123456", id: 1 },
-  { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-  { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-  { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-];
+import { useState, useEffect } from "react";
+
 const MatchedPersons = ({ match, persons }) => {
   return (
     <>
       {persons
         .filter((person) => person.name.startsWith(match))
         .map((person) => {
-          console.log(person);
           return (
             <p key={person.id}>
               {person.name} {person.number}
@@ -47,9 +41,15 @@ const PersonForm = ({ handleSubmit }) => {
   );
 };
 const App = () => {
-  const [persons, setPersons] = useState(data);
+  const [persons, setPersons] = useState([]);
   const [match, setMatch] = useState("");
 
+  const initPersons = () => {
+    fetch("http://localhost:3001/persons")
+      .then((r) => r.json())
+      .then((r) => setPersons(r));
+  };
+  useEffect(initPersons, []);
   const handleSubmit = (e, newName, newNumber) => {
     e.preventDefault();
     const nameAlreadyExists = checkDuplicateName(persons, newName);
