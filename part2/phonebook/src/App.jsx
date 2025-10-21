@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
+import personService from "./services/persons.js";
 
-const MatchedPersons = ({ match, persons }) => {
+const MatchedPersons = ({ match, persons, handleDelete }) => {
   return (
     <>
       {persons
         .filter((person) => person.name.startsWith(match))
         .map((person) => {
           return (
-            <p key={person.id}>
-              {person.name} {person.number}
-            </p>
+            <div key={person.id}>
+              <p>
+                {person.name} {person.number}
+              </p>
+              <button onClick={() => handleDelete(person.id)}>delete</button>
+            </div>
           );
         })}
     </>
@@ -43,13 +47,13 @@ const PersonForm = ({ handleSubmit }) => {
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [match, setMatch] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
 
   const initPersons = () => {
-    fetch("http://localhost:3001/persons")
-      .then((r) => r.json())
+    personService
+      .getAll()
       .then((r) => setPersons(r))
-      .catch((error) => setError(error));
+      .catch((error) => setError(error.message));
   };
   useEffect(initPersons, []);
   const handleSubmit = (e, newName, newNumber) => {
@@ -57,20 +61,26 @@ const App = () => {
     const nameAlreadyExists = checkDuplicateName(persons, newName);
     if (nameAlreadyExists) {
       alert(`ERROR: ${newName} already exists`);
-    } else {
-      setPersons(
-        persons.concat({
-          name: newName,
-          number: newNumber,
-        }),
-      );
+      return;
     }
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    };
+    personService.create(newPerson).then((createdPerson) => {
+      setPersons(persons.concat(createdPerson));
+    });
   };
   const checkDuplicateName = (persons, name) => {
     const alreadyExistsPerson = persons.filter(
       (person) => person.name === name,
     );
     return alreadyExistsPerson.length > 0;
+  };
+  const handleDelete = (id) => {
+    personService.remove(id).then((deletedPerson) => {
+      setPersons(persons.filter((person) => person.id !== deletedPerson.id));
+    });
   };
   return (
     <div>
@@ -85,7 +95,12 @@ const App = () => {
       <h2>Add new</h2>
       <PersonForm handleSubmit={handleSubmit} />
       <h2>Numbers</h2>
-      <MatchedPersons match={match} persons={persons} />
+      <MatchedPersons
+        match={match}
+        persons={persons}
+        handleDelete={handleDelete}
+      />
+      {error}
     </div>
   );
 };
