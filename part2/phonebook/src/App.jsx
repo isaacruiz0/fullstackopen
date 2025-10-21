@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import personService from "./services/persons.js";
 
 const MatchedPersons = ({ match, persons, handleDelete }) => {
+  console.log("rendered!");
+  console.log(persons);
   return (
     <>
       {persons
@@ -58,15 +60,30 @@ const App = () => {
   useEffect(initPersons, []);
   const handleSubmit = (e, newName, newNumber) => {
     e.preventDefault();
-    const nameAlreadyExists = checkDuplicateName(persons, newName);
-    if (nameAlreadyExists) {
-      alert(`ERROR: ${newName} already exists`);
-      return;
-    }
     const newPerson = {
       name: newName,
       number: newNumber,
     };
+    const nameAlreadyExists = checkDuplicateName(persons, newName);
+    if (nameAlreadyExists) {
+      if (
+        !window.confirm(
+          `${newName} already exists, replace the old number with the new one?`,
+        )
+      )
+        return;
+      const { id } = persons.find((person) => person.name === newName);
+      personService.update(id, newPerson).then((updatedPerson) => {
+        const updatedPersons = persons.map((person) => {
+          if (person.id === updatedPerson.id) {
+            return updatedPerson;
+          }
+          return person;
+        });
+        setPersons(updatedPersons);
+      });
+      return;
+    }
     personService.create(newPerson).then((createdPerson) => {
       setPersons(persons.concat(createdPerson));
     });
@@ -78,9 +95,11 @@ const App = () => {
     return alreadyExistsPerson.length > 0;
   };
   const handleDelete = (id) => {
-    personService.remove(id).then((deletedPerson) => {
-      setPersons(persons.filter((person) => person.id !== deletedPerson.id));
-    });
+    const { name } = persons.find((person) => person.id === id);
+    window.confirm(`Are you sure you want to delete ${name}`) &&
+      personService.remove(id).then((deletedPerson) => {
+        setPersons(persons.filter((person) => person.id !== deletedPerson.id));
+      });
   };
   return (
     <div>
