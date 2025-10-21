@@ -48,15 +48,12 @@ const PersonForm = ({ handleSubmit }) => {
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [match, setMatch] = useState("");
-  const [error, setError] = useState(null);
   // Notification State
-  const [newlyAddedPerson, setNewlyAddedPerson] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationState, setNotificationState] = useState(null);
 
   const initPersons = () => {
-    personService
-      .getAll()
-      .then((r) => setPersons(r))
-      .catch((error) => setError(error.message));
+    personService.getAll().then((r) => setPersons(r));
   };
   useEffect(initPersons, []);
   const handleSubmit = (e, newName, newNumber) => {
@@ -74,23 +71,37 @@ const App = () => {
       )
         return;
       const { id } = persons.find((person) => person.name === newName);
-      personService.update(id, newPerson).then((updatedPerson) => {
-        const updatedPersons = persons.map((person) => {
-          if (person.id === updatedPerson.id) {
-            return updatedPerson;
-          }
-          return person;
-        });
+      personService
+        .update(id, newPerson)
+        .then((updatedPerson) => {
+          const updatedPersons = persons.map((person) => {
+            if (person.id === updatedPerson.id) {
+              return updatedPerson;
+            }
+            return person;
+          });
 
-        setPersons(updatedPersons);
-        setNewlyAddedPerson(newName);
-        setTimeout(() => setNewlyAddedPerson(null), 4000);
-      });
+          setPersons(updatedPersons);
+          setNotificationMessage(
+            `Successfully added/updated ${newName} to phonebook`,
+          );
+          setNotificationState("success");
+          setTimeout(() => setNotificationMessage(null), 4000);
+        })
+        .catch(() => {
+          setNotificationMessage(
+            `Information of ${newName} has already been removed from server`,
+          );
+          setNotificationState("error");
+        });
       return;
     }
     personService.create(newPerson).then((createdPerson) => {
-      setNewlyAddedPerson(newName);
-      setTimeout(() => setNewlyAddedPerson(null), 4000);
+      setNotificationMessage(
+        `Successfully added/updated ${newName} to phonebook`,
+      );
+      setNotificationState("success");
+      setTimeout(() => setNotificationMessage(null), 4000);
       setPersons(persons.concat(createdPerson));
     });
   };
@@ -109,10 +120,8 @@ const App = () => {
   };
   return (
     <div>
-      {newlyAddedPerson && (
-        <Notification
-          message={`Successfully added/updated ${newlyAddedPerson} to phonebook`}
-        />
+      {notificationMessage && (
+        <Notification message={notificationMessage} state={notificationState} />
       )}
       <h2>Phonebook</h2>
       <div>
@@ -130,7 +139,6 @@ const App = () => {
         persons={persons}
         handleDelete={handleDelete}
       />
-      {error}
     </div>
   );
 };
