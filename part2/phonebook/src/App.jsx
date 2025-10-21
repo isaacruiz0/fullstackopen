@@ -43,11 +43,13 @@ const PersonForm = ({ handleSubmit }) => {
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [match, setMatch] = useState("");
+  const [error, setError] = useState("");
 
   const initPersons = () => {
     fetch("http://localhost:3001/persons")
       .then((r) => r.json())
-      .then((r) => setPersons(r));
+      .then((r) => setPersons(r))
+      .catch((error) => setError(error));
   };
   useEffect(initPersons, []);
   const handleSubmit = (e, newName, newNumber) => {
