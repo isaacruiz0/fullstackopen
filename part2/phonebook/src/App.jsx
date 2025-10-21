@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import personService from "./services/persons.js";
+import Notification from "./components/Notification.jsx";
 
 const MatchedPersons = ({ match, persons, handleDelete }) => {
-  console.log("rendered!");
-  console.log(persons);
   return (
     <>
       {persons
@@ -50,6 +49,8 @@ const App = () => {
   const [persons, setPersons] = useState([]);
   const [match, setMatch] = useState("");
   const [error, setError] = useState(null);
+  // Notification State
+  const [newlyAddedPerson, setNewlyAddedPerson] = useState(null);
 
   const initPersons = () => {
     personService
@@ -80,11 +81,16 @@ const App = () => {
           }
           return person;
         });
+
         setPersons(updatedPersons);
+        setNewlyAddedPerson(newName);
+        setTimeout(() => setNewlyAddedPerson(null), 4000);
       });
       return;
     }
     personService.create(newPerson).then((createdPerson) => {
+      setNewlyAddedPerson(newName);
+      setTimeout(() => setNewlyAddedPerson(null), 4000);
       setPersons(persons.concat(createdPerson));
     });
   };
@@ -103,6 +109,11 @@ const App = () => {
   };
   return (
     <div>
+      {newlyAddedPerson && (
+        <Notification
+          message={`Successfully added/updated ${newlyAddedPerson} to phonebook`}
+        />
+      )}
       <h2>Phonebook</h2>
       <div>
         <label>Filter as shown: </label>
