@@ -33,7 +33,8 @@ app.get("/api/persons", (req, res) => {
 app.get("/api/persons/:params_id", (req, res) => {
   const { params_id } = req.params;
   const selectedPerson = persons.find((person) => person.id === params_id);
-  res.json(selectedPerson);
+  if (selectedPerson) res.json(selectedPerson);
+  else res.status(404).end();
 });
 
 app.get("/info", (req, res) => {
