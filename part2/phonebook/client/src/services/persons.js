@@ -4,27 +4,29 @@ const getAll = () => {
   return persons;
 };
 const create = (newPerson) => {
-  const createdPerson = fetch(baseUrl, {
+  const createdPersonPromise = fetch(baseUrl, {
     method: "POST",
     type: "application/json",
     body: JSON.stringify(newPerson),
+  });
+  return createdPersonPromise;
 };
 const remove = (id) => {
   const url = `${baseUrl}${id}`;
-  const deletedPerson = fetch(url, {
+  const deletedPersonPromise = fetch(url, {
     method: "DELETE",
   }).then((r) => r.json());
-  return deletedPerson;
+  return deletedPersonPromise;
 };
 const update = (id, newPerson) => {
   const url = `${baseUrl}${id}`;
-  const updatedPerson = fetch(url, {
+  const updatedPersonPromise = fetch(url, {
     method: "PUT",
     type: "application/json",
     body: JSON.stringify(newPerson),
   }).then((r) => r.json());
 
-  return updatedPerson;
+  return updatedPersonPromise;
 };
 
 export default { getAll, create, remove, update };
