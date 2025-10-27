@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:3000/";
+const baseUrl = "http://localhost:3000/api/persons/";
 const getAll = () => {
   const persons = fetch(baseUrl).then((r) => r.json());
   return persons;

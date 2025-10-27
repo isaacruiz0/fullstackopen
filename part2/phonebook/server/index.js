@@ -26,8 +26,7 @@ const data = [
 const app = express();
 const PORT = 3000;
 
-app.get("/", (req, res) => {
-  console.log("requested");
+app.get("/api/persons/", (req, res) => {
   res.json(data);
 });
 
