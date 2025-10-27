@@ -1,6 +1,6 @@
 import express from "express";
 
-const data = [
+const persons = [
   {
     id: "1",
     name: "Arto Hellas",
@@ -26,8 +26,19 @@ const data = [
 const app = express();
 const PORT = 3000;
 
-app.get("/api/persons/", (req, res) => {
-  res.json(data);
+app.get("/api/persons", (req, res) => {
+  res.json(persons);
+});
+
+app.get("/api/persons/:params_id", (req, res) => {
+  const { params_id } = req.params;
+  const selectedPerson = persons.find((person) => person.id === params_id);
+  res.json(selectedPerson);
+});
+
+app.get("/info", (req, res) => {
+  const personsCount = persons.length;
+  res.send(`<p>Phonebook has info for ${personsCount}</p></b><p>${Date()}</p>`);
 });
 
 app.listen(PORT, () => {
