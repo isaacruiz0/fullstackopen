@@ -75,7 +75,7 @@ app.put("/api/notes/:id", (req, res) => {
   notes = notes.map((note) => (note.id === id ? updatedNote : note));
   res.status(200).json(updatedNote);
 });
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
