@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:4001/api/notes";
+const baseUrl = "/api/notes";
 
 const getAll = () => {
   const notes = fetch(`${baseUrl}`).then((r) => r.json());

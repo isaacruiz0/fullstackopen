@@ -25,13 +25,13 @@ const generateId = () => {
 };
 app.use(cors());
 app.use(express.json());
+app.use(express.static("dist"));
 app.get("/", (req, res) => {
   res.send(
     "<h1>Bruh how did browser know to render HTML? </h1><a href=\'/api/notes\' >/notes</a>",
   );
 });
 app.get("/api/notes", (req, res) => {
-  console.info("requst processed");
   res.json(notes);
 });
 app.get("/api/notes/:id", (req, res) => {
