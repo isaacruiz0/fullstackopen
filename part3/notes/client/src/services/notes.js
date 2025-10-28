@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:4000/api/notes";
+const baseUrl = "http://localhost:4001/api/notes";
 
 const getAll = () => {
   const notes = fetch(`${baseUrl}`).then((r) => r.json());
@@ -8,7 +8,7 @@ const update = (id, newNote) => {
   const updatedNote = fetch(`${baseUrl}/${id}`, {
     method: "PUT",
     headers: {
-      type: "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(newNote),
   }).then((res) => res.json());
@@ -20,7 +20,7 @@ const create = (noteObject) => {
     method: "POST",
     body: JSON.stringify(noteObject),
     headers: {
-      type: "application/json",
+      "Content-Type": "application/json",
     },
   }).then((res) => res.json());
   return newlyAddedNote;

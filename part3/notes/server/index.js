@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 const app = express();
 
 let notes = [
@@ -22,12 +23,15 @@ const generateId = () => {
   notes.length > 0 ? Math.max(...notes.map((n) => Number(n.id))) : 0;
   return String(maxId + 1);
 };
+app.use(cors());
+app.use(express.json());
 app.get("/", (req, res) => {
   res.send(
     "<h1>Bruh how did browser know to render HTML? </h1><a href=\'/api/notes\' >/notes</a>",
   );
 });
 app.get("/api/notes", (req, res) => {
+  console.info("requst processed");
   res.json(notes);
 });
 app.get("/api/notes/:id", (req, res) => {
@@ -63,6 +67,13 @@ app.post("/api/notes", (req, res) => {
   };
   notes = note.concat(note);
   res.json(note);
+});
+app.put("/api/notes/:id", (req, res) => {
+  const { id } = req.params;
+  const { content, important } = req.body;
+  const updatedNote = { content, important, id };
+  notes = notes.map((note) => (note.id === id ? updatedNote : note));
+  res.status(200).json(updatedNote);
 });
 const PORT = 4001;
 app.listen(PORT, () => {
