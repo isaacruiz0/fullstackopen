@@ -1,4 +1,5 @@
 import express from "express";
+import morgan from "morgan";
 
 let persons = [
   {
@@ -26,11 +27,16 @@ let persons = [
 const app = express();
 const PORT = 3000;
 
+app.use(express.json());
+morgan.token("body", function getId(req) {
+  return JSON.stringify(req.body);
+});
+app.use(morgan(":method :url :body"));
+
 const checkDuplicateName = (persons, name) => {
   const alreadyExistsPerson = persons.filter((person) => person.name === name);
   return alreadyExistsPerson.length > 0;
 };
-
 app.get("/api/persons", (req, res) => {
   res.json(persons);
 });
