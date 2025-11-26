@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf dist && cd ../client/ && pnpm run build && cp -r dist ../server",
+    "deploy": "fly deploy",
+    "deploy:full": "pnpm run build:ui && pnpm run deploy",
+    "logs:prod": "fly logs"
   },
   "keywords": [],
   "author": "",
